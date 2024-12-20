@@ -1,0 +1,11 @@
+[package]
+name = "time_capsule"
+version = "0.0.1"
+published-at = "0x0" # 发布后会自动更新
+edition = "2024.beta"
+[dependencies]
+Sui = { git = "https://gitee.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/testnet" }
+
+[addresses]
+time_capsule = "0x0" # 发布后会自动更新
+sui = "0x2"
