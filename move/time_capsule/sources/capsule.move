@@ -14,7 +14,7 @@ module time_capsule::capsule {
     public struct TimeCapsule has key, store {
         id: UID,
         content: String,           // 文字内容
-        media_content: vector<u8>, // 媒体内容
+        media_content: String,     // 媒体内容
         content_type: String,      // 内容类型: text/image/video
         unlock_time: u64,
         owner: address,
@@ -41,7 +41,7 @@ module time_capsule::capsule {
         let capsule = TimeCapsule {
             id: object::new(ctx),
             content: string::utf8(content),
-            media_content,
+            media_content: string::utf8(media_content),
             content_type: string::utf8(content_type),
             unlock_time,
             owner: tx_context::sender(ctx),
@@ -59,7 +59,7 @@ module time_capsule::capsule {
     }
 
     // 获取胶囊媒体内容
-    public fun view_media_content(capsule: &TimeCapsule, clock: &Clock, viewer: address): vector<u8> {
+    public fun view_media_content(capsule: &TimeCapsule, clock: &Clock, viewer: address): String {
         assert!(clock::timestamp_ms(clock) >= capsule.unlock_time || viewer == capsule.owner, ENotUnlockTime);
         assert!(viewer == capsule.recipient || viewer == capsule.owner, ENotAuthorized);
         capsule.media_content

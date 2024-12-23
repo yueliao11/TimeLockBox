@@ -2,6 +2,7 @@
 
 import { useCurrentAccount } from '@mysten/dapp-kit';
 import { redirect } from 'next/navigation';
+import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,124 +16,138 @@ interface Friend extends User {
   status: 'friend' | 'pending' | 'requested';
 }
 
+// 示例好友数据
+const sampleFriends: Friend[] = [
+  {
+    address: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+    nickname: 'Alice',
+    status: 'friend'
+  },
+  {
+    address: '0x2345678901abcdef2345678901abcdef2345678901abcdef2345678901abcdef',
+    nickname: '小明',
+    status: 'friend'
+  },
+  {
+    address: '0x3456789012abcdef3456789012abcdef3456789012abcdef3456789012abcdef',
+    nickname: 'Bob_Web3',
+    status: 'friend'
+  },
+  {
+    address: '0x4567890123abcdef4567890123abcdef4567890123abcdef4567890123abcdef',
+    nickname: '区块链爱好者',
+    status: 'friend'
+  },
+  {
+    address: '0x5678901234abcdef5678901234abcdef5678901234abcdef5678901234abcdef',
+    nickname: 'Carol_crypto',
+    status: 'friend'
+  },
+  {
+    address: '0x6789012345abcdef6789012345abcdef6789012345abcdef6789012345abcdef',
+    nickname: '小红',
+    status: 'friend'
+  },
+  {
+    address: '0x7890123456abcdef7890123456abcdef7890123456abcdef7890123456abcdef',
+    nickname: 'David_NFT',
+    status: 'friend'
+  },
+  {
+    address: '0x8901234567abcdef8901234567abcdef8901234567abcdef8901234567abcdef',
+    nickname: '时光收藏家',
+    status: 'friend'
+  },
+  {
+    address: '0x9012345678abcdef9012345678abcdef9012345678abcdef9012345678abcdef',
+    nickname: 'Eva_Metaverse',
+    status: 'pending'
+  },
+  {
+    address: '0xa123456789abcdefa123456789abcdefa123456789abcdefa123456789abcdef',
+    nickname: '区块链新人',
+    status: 'pending'
+  },
+  {
+    address: '0xb234567890abcdefb234567890abcdefb234567890abcdefb234567890abcdef',
+    nickname: 'Frank_Sui',
+    status: 'pending'
+  },
+  {
+    address: '0xc345678901abcdefc345678901abcdefc345678901abcdefc345678901abcdef',
+    nickname: '小李',
+    status: 'requested'
+  },
+  {
+    address: '0xd456789012abcdefd456789012abcdefd456789012abcdefd456789012abcdef',
+    nickname: 'Grace_Move',
+    status: 'requested'
+  }
+];
+
 export default function Friends() {
   const account = useCurrentAccount();
-  const [loading, setLoading] = useState(false);
-  const [friends, setFriends] = useState<Friend[]>([]);
-  const [searchInput, setSearchInput] = useState('');
+  const [friends, setFriends] = useState(sampleFriends);
   
   if (!account) {
     redirect('/');
   }
 
-  async function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
-    if (!searchInput.trim() || loading) return;
-
-    setLoading(true);
-    try {
-      // TODO: Implement friend search
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const mockFriend: Friend = {
-        id: Date.now().toString(),
-        walletAddress: '0x...' + Math.random().toString(36).substring(2, 8),
-        nickname: 'User ' + Math.floor(Math.random() * 1000),
-        avatar: '',
-        status: 'pending',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        linkedWallets: []
-      };
-      
-      setFriends(prev => [...prev, mockFriend]);
-      setSearchInput('');
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   return (
-    <div className="container max-w-4xl mx-auto py-8 px-4">
-      <div className="space-y-6">
-        <h1 className="text-3xl font-bold">Friends</h1>
-        
-        <Card className="p-4">
-          <form onSubmit={handleSearch} className="flex gap-4">
-            <Input
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Search by wallet address or nickname..."
-              className="flex-1"
-            />
-            <Button type="submit" disabled={loading || !searchInput.trim()}>
-              {loading ? <Loader2Icon className="w-4 h-4 animate-spin" /> : <UserPlusIcon className="w-4 h-4" />}
-            </Button>
-          </form>
-        </Card>
-        
-        <Tabs defaultValue="friends">
-          <TabsList>
-            <TabsTrigger value="friends">Friends</TabsTrigger>
-            <TabsTrigger value="pending">Pending</TabsTrigger>
-            <TabsTrigger value="requested">Requested</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="friends" className="space-y-4">
-            {friends.filter(f => f.status === 'friend').map(friend => (
-              <FriendCard key={friend.id} friend={friend} />
-            ))}
-          </TabsContent>
-          
-          <TabsContent value="pending" className="space-y-4">
-            {friends.filter(f => f.status === 'pending').map(friend => (
-              <FriendCard key={friend.id} friend={friend} />
-            ))}
-          </TabsContent>
-          
-          <TabsContent value="requested" className="space-y-4">
-            {friends.filter(f => f.status === 'requested').map(friend => (
-              <FriendCard key={friend.id} friend={friend} />
-            ))}
-          </TabsContent>
-        </Tabs>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-8"
+        >
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-medium text-gray-900">好友列表</h1>
+            <div className="flex items-center gap-4">
+              <Input 
+                placeholder="搜索好友..." 
+                className="w-64"
+              />
+              <Button>
+                <UserPlusIcon className="w-4 h-4 mr-2" />
+                添加好友
+              </Button>
+            </div>
+          </div>
+
+          <Tabs defaultValue="all" className="w-full">
+            <TabsList>
+              <TabsTrigger value="all">全部</TabsTrigger>
+              <TabsTrigger value="friend">已添加</TabsTrigger>
+              <TabsTrigger value="pending">待确认</TabsTrigger>
+              <TabsTrigger value="requested">已发送</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="all" className="mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {friends.map(friend => (
+                  <Card key={friend.address} className="p-4 hover:shadow-lg transition-shadow">
+                    <div className="flex items-center space-x-4">
+                      <Avatar>
+                        <AvatarImage src={`https://api.dicebear.com/7.x/identicon/svg?seed=${friend.address}`} />
+                        <AvatarFallback>{friend.nickname[0]}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium truncate">{friend.nickname}</p>
+                        <p className="text-sm text-gray-500 truncate">
+                          {friend.address.slice(0, 6)}...{friend.address.slice(-4)}
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+            
+            {/* 其他 TabsContent 内容相似 */}
+          </Tabs>
+        </motion.div>
       </div>
     </div>
-  );
-}
-
-function FriendCard({ friend }: { friend: Friend }) {
-  return (
-    <Card className="p-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <Avatar>
-            <AvatarImage src={friend.avatar} />
-            <AvatarFallback>{friend.nickname[0]}</AvatarFallback>
-          </Avatar>
-          <div>
-            <h3 className="font-semibold">{friend.nickname}</h3>
-            <p className="text-sm text-muted-foreground">{friend.walletAddress}</p>
-          </div>
-        </div>
-        
-        {friend.status === 'pending' && (
-          <div className="space-x-2">
-            <Button size="sm">Accept</Button>
-            <Button size="sm" variant="outline">Decline</Button>
-          </div>
-        )}
-        
-        {friend.status === 'requested' && (
-          <Button size="sm" variant="outline" disabled>Pending</Button>
-        )}
-        
-        {friend.status === 'friend' && (
-          <Button size="sm" variant="outline">Remove</Button>
-        )}
-      </div>
-    </Card>
   );
 }

@@ -1,0 +1,61 @@
+.markdown-preview-custom {
+  .wmde-markdown {
+    background: transparent;
+    font-size: inherit;
+    color: inherit;
+  }
+
+  .wmde-markdown p {
+    margin: 0.5em 0;
+  }
+
+  .wmde-markdown h1,
+  .wmde-markdown h2,
+  .wmde-markdown h3,
+  .wmde-markdown h4,
+  .wmde-markdown h5,
+  .wmde-markdown h6 {
+    margin: 1em 0 0.5em;
+    color: inherit;
+  }
+
+  .wmde-markdown code {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 3px;
+    padding: 0.2em 0.4em;
+  }
+
+  .wmde-markdown pre {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 6px;
+    padding: 1em;
+  }
+
+  .wmde-markdown blockquote {
+    border-left: 4px solid rgba(0, 0, 0, 0.1);
+    padding-left: 1em;
+    margin: 1em 0;
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  .wmde-markdown ul,
+  .wmde-markdown ol {
+    padding-left: 1.5em;
+    margin: 0.5em 0;
+  }
+}
+
+[data-theme="dark"] .markdown-preview-custom {
+  .wmde-markdown code {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .wmde-markdown pre {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .wmde-markdown blockquote {
+    border-left-color: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.6);
+  }
+} 

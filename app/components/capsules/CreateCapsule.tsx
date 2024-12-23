@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useSignAndExecuteTransaction, useCurrentAccount } from '@mysten/dapp-kit';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -34,7 +34,7 @@ export function CreateCapsule() {
       return;
     }
 
-    const tx = new TransactionBlock();
+    const tx = new Transaction();
     const [capsule] = tx.moveCall({
       target: '${PACKAGE_ID}::capsule::create_capsule',
       arguments: [

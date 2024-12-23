@@ -7,6 +7,8 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import StorageSDK from "walrus-sdk";
+import dynamic from 'next/dynamic';
+import '@uiw/react-markdown-preview/markdown.css';
 
 const storage = new StorageSDK();
 
@@ -21,6 +23,9 @@ const DEFAULT_IMAGES = {
     '/unlock.jpg'
   ]
 };
+
+const DEFAULT_CLOSED_IMG = '/timebox.jpg'
+const DEFAULT_OPENED_IMG = '/unlock.jpg'
 
 interface CapsuleProps {
   capsule: {
@@ -59,6 +64,20 @@ interface CapsuleCardProps extends CapsuleProps {
   isPreview?: boolean;
 }
 
+// 添加工具函数转换Uint8Array到base64
+const arrayBufferToBase64 = (buffer: Uint8Array) => {
+  let binary = '';
+  for (let i = 0; i < buffer.length; i++) {
+    binary += String.fromCharCode(buffer[i]);
+  }
+  return btoa(binary);
+};
+
+const MarkdownPreview = dynamic(
+  () => import('@uiw/react-markdown-preview').then((mod) => mod.default),
+  { ssr: false }
+);
+
 export function CapsuleCard({ capsule, currentAddress, isPreview = false }: CapsuleCardProps) {
   const [imageUrl, setImageUrl] = useState<string>('');
   const [loading, setLoading] = useState(false);
@@ -75,9 +94,11 @@ export function CapsuleCard({ capsule, currentAddress, isPreview = false }: Caps
       if (capsule.mediaContent) {
         setLoading(true);
         try {
-          const response = await storage.downloadBlob(capsule.mediaContent);
-          const url = URL.createObjectURL(response);
-          setImageUrl(url);
+          const uploadImageUrl = "https://aggregator.walrus-testnet.walrus.space/";
+          const imageUrl = uploadImageUrl + `v1/${capsule.mediaContent}`;
+          
+          console.log("imageUrl:", imageUrl);
+          setImageUrl(imageUrl);
         } catch (error) {
           console.error('Error fetching image:', error);
           setImageUrl(getDefaultImage());
@@ -172,6 +193,11 @@ export function CapsuleCard({ capsule, currentAddress, isPreview = false }: Caps
     timeLeft: getCapsuleStatus().label
   };
 
+  // 在使用mediaContent时进行转换
+  const imgSrc = capsuleInfo.mediaContent ? 
+    `data:image/jpeg;base64,${arrayBufferToBase64(new Uint8Array(Buffer.from(capsuleInfo.mediaContent, 'base64')))}` :
+    (status === 'unlocked' ? DEFAULT_OPENED_IMG : DEFAULT_CLOSED_IMG);
+
   return (
     <motion.div
       whileHover={isPreview ? { scale: 1.02 } : {}}
@@ -185,10 +211,13 @@ export function CapsuleCard({ capsule, currentAddress, isPreview = false }: Caps
     >
       <div className={`relative ${isPreview ? 'h-[220px]' : 'h-[300px]'}`}>
         <Image
-          src={imageUrl}
+          src={imgSrc}
           alt="胶囊封面"
           fill
           className="object-cover"
+          onError={(e) => {
+            e.currentTarget.src = status === 'unlocked' ? DEFAULT_OPENED_IMG : DEFAULT_CLOSED_IMG
+          }}
           priority
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
@@ -274,6 +303,10 @@ function CapsuleContent({ capsuleInfo, status, isOwner }: {
   status: string;
   isOwner: boolean;
 }) {
+  const getMaskedContent = (content: string) => {
+    return content.replace(/./g, '*');
+  };
+
   if (status === 'locked') {
     return (
       <div className="text-center py-8">
@@ -282,14 +315,19 @@ function CapsuleContent({ capsuleInfo, status, isOwner }: {
         <p className="mt-1 text-sm text-gray-500">
           {isOwner ? '等待接收者解锁' : '请等待解锁时间到达'}
         </p>
+        {capsuleInfo.content && (
+          <p className="mt-4 text-sm text-gray-400 font-mono">
+            {getMaskedContent(capsuleInfo.content)}
+          </p>
+        )}
       </div>
     );
   }
 
   return (
     <div className="space-y-4">
-      <div className="prose max-w-none">
-        {capsuleInfo.content}
+      <div className="prose max-w-none markdown-preview-custom">
+        <MarkdownPreview source={capsuleInfo.content} />
       </div>
       {capsuleInfo.mediaContent && (
         <div className="relative h-64 rounded-lg overflow-hidden">
@@ -306,6 +344,10 @@ function CapsuleContent({ capsuleInfo, status, isOwner }: {
 }
 
 function PreviewContent({ capsuleInfo, isOwner }: { capsuleInfo: CapsuleInfo; isOwner: boolean }) {
+  const getMaskedContent = (content: string) => {
+    return content.replace(/./g, '*');
+  };
+
   return (
     <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
       <div className="flex items-center justify-between">
@@ -314,7 +356,7 @@ function PreviewContent({ capsuleInfo, isOwner }: { capsuleInfo: CapsuleInfo; is
             {isOwner ? '发送给: ' + capsuleInfo.recipient : '来自: ' + capsuleInfo.owner}
           </div>
           <div className="font-medium mt-2 line-clamp-2">
-            {capsuleInfo.content}
+            {capsuleInfo.status === 'locked' ? getMaskedContent(capsuleInfo.content) : capsuleInfo.content}
           </div>
         </div>
         {capsuleInfo.status === 'locked' && (

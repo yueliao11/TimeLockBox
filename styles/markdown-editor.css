@@ -1,0 +1,27 @@
+.markdown-editor-container {
+  .w-md-editor {
+    box-shadow: none;
+    background: white;
+  }
+
+  .w-md-editor-toolbar {
+    border-radius: 0.5rem 0.5rem 0 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .w-md-editor-text {
+    padding: 1rem;
+  }
+
+  .w-md-editor-preview {
+    padding: 1rem;
+    box-shadow: none;
+    border-left: 1px solid var(--border);
+  }
+}
+
+[data-color-mode="dark"] .markdown-editor-container {
+  .w-md-editor {
+    background: var(--background);
+  }
+} 

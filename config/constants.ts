@@ -2,7 +2,7 @@ export const NETWORK = 'testnet' as const;
 // #'0x6f1cb1a5abdab54c097e423679c6e7fbb4889b9dcf41f43cb8a3028596e9d113',
  
 export const CONTRACT = {
-  PACKAGE_ID: '0x1d1e075f3d8e6ee7f1f3c5cb03654790ff4ee412abc46699d2ff2af3dee239d4' ,
+  PACKAGE_ID: '0x8326583e7545be43de659cfb0375cc3a1560b7c8030a1584542601b91534b920' ,
   CLOCK_ID: '0x6',
   MODULE: 'capsule',
     TIME_CAPSULE: 'TimeCapsule'
